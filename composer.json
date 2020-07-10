@@ -1,13 +1,16 @@
 {
-    "name": "jordanbrauer/deployer-mysql",
-    "description": "An unofficial Deployer recipe containing a set of useful tasks for interacting with MySQL locally & remotely.",
-    "version": "1.0.1",
+    "name": "pxlrbt/deployer-mysql",
+    "description": "Unoffical Deployer recipe containing MySQL tasks.",
     "type": "library",
+    "require-dev": {
+        "deployer/deployer": ">=6.8"
+    },
     "license": "MIT",
     "authors": [
         {
-            "name": "jordanbrauer",
-            "email": "jbrauer.inc@gmail.com"
+            "name": "Dennis Koch",
+            "email": "info@pixelarbeit.de"
         }
-    ]
+    ],
+    "require": {}
 }
