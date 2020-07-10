@@ -29,7 +29,7 @@ set('mysql.connection', [
 ]);
 
 set('mysql.dump', [
-    'file' => null,
+    'file' => 'dump.sql',
     'options' => [
         '--skip-comments',
     ]
