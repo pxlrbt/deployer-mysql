@@ -1,47 +1,56 @@
 # deployer-mysql
 
-An unofficial [Deployer](https://github.com/deployphp/deployer) recipe containing a set of useful tasks for interacting with MySQL locally &amp; remotely.
+An unofficial [Deployer](https://github.com/deployphp/deployer) recipe containing a set of useful tasks for interacting with MySQL.
 
-## Usage
+## Installation
 
-### Installation
-
-Install via Composer as a dev' dependency to your project.
+Install via Composer as a dev dependency to your project.
 
 ```shell
-$ composer require --dev jordanbrauer/deployer-mysql
+$ composer require --dev pxlrbt/deployer-mysql
 ```
 
-### Basic Setup
+## Configuration
 
-Add the following to your deployer config;
+For configuring MySQL connection, add the following to your deployer config:
 
 ```php
-require_once "mysql.php";
+require __DIR__ . '/vendor/pxlrbt/deployer-mysql/recipe/mysql.php';
 
-set("mysql", array(
-  "host" => "localhost",
-  "port" => 3306,
-  "schema" => "your_database_name",
-  "username" => "root",
-  "password" => "root",
-  "dump_file" => "path/to/your/dump/file.sql",
-));
+set('mysql.connection', [
+  'host' => 'localhost',
+  'port' => 3306,
+  'database' => 'your_database_name',
+  'username' => 'root',
+  'password' => 'root',
+]);
 ```
 
-### Additional Setup
-
-If you want to add options (flags) to your `mysqldump` command task, you can do so by adding the "`dump_options`" key to the configuration array, like so;
-
+You can modify the dump file and `mysqldump` options via:
 ```php
-set("mysql", array(
-  // ...
-  "dump_options" => array(
-    "--skip-comments",
-  ),
-));
+set('mysql.dump', [
+  'file' => 'dump.sql',
+  'options' => [
+      '--skip-comments'
+  ]
+]);
 ```
 
 Each option you want to add must be a new entry in the array.
 
 _**Note:** the_ `--skip-comments` _option is the only default option set. So, if you don't have any other options for your setup, you can omit this configuration key entirely._
+
+## Autoloading database credentials
+
+Instead of providing your database credentials inside the deployer config, it's better to load them
+from an existing config (e.g. .env file).
+
+### Laravel
+
+There is a recipe that autoloads the credentials from Laravels `.env` file. Just add the recipe to
+your deployer file and your ready to go-
+
+```php
+require __DIR__ . '/vendor/pxlrbt/deployer-mysql/recipe/laravel.php';
+```
+If you want to add options (flags) to your `mysqldump` command task, you can do so by adding the "`options`" key to the configuration array, like so;
