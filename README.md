@@ -53,4 +53,3 @@ your deployer file and your ready to go-
 ```php
 require __DIR__ . '/vendor/pxlrbt/deployer-mysql/recipe/laravel.php';
 ```
-If you want to add options (flags) to your `mysqldump` command task, you can do so by adding the "`options`" key to the configuration array, like so;
