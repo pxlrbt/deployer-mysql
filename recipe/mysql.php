@@ -9,7 +9,7 @@
 
 namespace Deployer;
 
-// Set defaults
+// Config
 set('bin/mysqldump', function () {
     return locateBinaryPath('mysqldump');
 });
@@ -23,7 +23,7 @@ set('mysql.before_cmd', 'true');
 set('mysql.connection', [
     'host' => 'localhost',
     'port' => '3306',
-    'schema' => null,
+    'database' => null,
     'username' => 'root',
     'password' => '',
 ]);
@@ -43,10 +43,10 @@ task('mysql:dump', function () {
     $dump['options'] = implode(" ", $dump['options']);
 
     if (!$dump['file']) {
-        throw new Exception('The mysql.dump.file has not been set. Please set this in your deployer configuration.');
+        throw new Exception('"mysql.dump.file" has not been set.');
     }
 
-    run("{{mysql.before_cmd}} && {{bin/mysqldump}} -h {$conn['host']} -P {$conn['port']} -u {$conn['username']} -p{$conn['password']} {$dump['options']} {$conn['schema']} > {{release_path}}/{$dump['file']}");
+    run("{{mysql.before_cmd}} && {{bin/mysqldump}} -h {$conn['host']} -P {$conn['port']} -u {$conn['username']} -p{$conn['password']} {$dump['options']} {$conn['database']} > {{release_path}}/{$dump['file']}");
 });
 
 desc('Restore the database from an SQL file');
@@ -54,15 +54,15 @@ task('mysql:restore', function () {
     $conn = get('mysql.connection');
     $dump = get('mysql.dump');
 
-    if (!$conn['schema']) {
-        throw new Exception('A schema has not been specific for use. Please set the mysql.connection.schema in your deployer configuration');
+    if (!$conn['database']) {
+        throw new Exception('"mysql.connection.database" has not been set.');
     }
 
     if (!$dump['file']) {
-        throw new Exception('The mysql.dump.file has not been set. Please set this in your deployer configuration.');
+        throw new Exception('"mysql.dump.file" has not been set.');
     }
 
-    run("{{mysql.before_cmd}} && {{bin/mysql}} -h {$conn['host']} -P {$conn['port']} -u {$conn['username']} -p{$conn['password']} {$conn['schema']} < {$dump['file']}");
+    run("{{mysql.before_cmd}} && {{bin/mysql}} -h {$conn['host']} -P {$conn['port']} -u {$conn['username']} -p{$conn['password']} {$conn['database']} < {$dump['file']}");
 });
 
 desc('Download the current remote SQL dump to local');
@@ -70,20 +70,10 @@ task('mysql:download', function () {
     $dump = get('mysql.dump');
 
     if (!$dump['file']) {
-        throw new Exception('The mysql.dump.file has not been set. Please set this in your deployer configuration.');
+        throw new Exception('"mysql.dump.file" option has not been set.');
     }
 
     download("{{release_path}}/{$dump['file']}", "{$dump['file']}");
-});
-
-task('mysql:cleanup', function () {
-    $dump = get('mysql.dump');
-
-    if (!$dump['file']) {
-        throw new Exception('The mysql.dump.file has not been set. Please set this in your deployer configuration.');
-    }
-
-    run("rm {{release_path}}/{$dump['file']}");
 });
 
 desc('Upload the current local SQL dump to remote');
@@ -91,10 +81,21 @@ task('mysql:upload', function () {
     $dump = get('mysql.dump');
 
     if (!$dump['file']) {
-        throw new Exception('The mysql.dump.file has not been set. Please set this in your deployer configuration.');
+        throw new Exception('"mysql.dump.file" option has not been set.');
     }
 
     upload("{$dump['file']}", "{{release_path}}/{$dump['file']}");
+});
+
+desc('Removes the SQL dump file.');
+task('mysql:cleanup', function () {
+    $dump = get('mysql.dump');
+
+    if (!$dump['file']) {
+        throw new Exception('"mysql.dump.file" option has not been set.');
+    }
+
+    run("rm {{release_path}}/{$dump['file']}");
 });
 
 desc('Fetch a fresh copy of the remote SQL dump');
